@@ -1,7 +1,7 @@
 import type { BreadcrumbList, FAQPage, Organization, Service, WebPage, WebSite } from "schema-dts";
 import company from "@/data/company";
 import { serviceCatalog } from "@/data/service-catalog";
-import type { Faq } from "./validators";
+import type { Faq, Testimonial } from "./validators";
 
 export const SITE_URL = `https://${company.domain}`;
 const ORG_ID = `${SITE_URL}/#organization`;
@@ -160,6 +160,39 @@ export function serviceSchema({
     areaServed: { "@type": "Place", name: "Worldwide" },
   } satisfies Service;
 }
+
+export function testimonialsSchema(items: Testimonial[]) {
+  return {
+    "@type": "ItemList",
+    name: "Client Testimonials & Reviews",
+    description: "Verified client reviews and testimonials for Asauvia software and AI engineering services.",
+    numberOfItems: items.length,
+    itemListElement: items.map((t, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Review",
+        itemReviewed: {
+          "@id": ORG_ID,
+        },
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: t.rating,
+          bestRating: 5,
+          worstRating: 1,
+        },
+        author: {
+          "@type": "Person",
+          name: t.author,
+          jobTitle: `${t.role}, ${t.industry}`,
+        },
+        reviewBody: t.story,
+        datePublished: t.date,
+      },
+    })),
+  };
+}
+
 
 /**
  * Standard JSON-LD graph for an inner page: Organization + WebPage +

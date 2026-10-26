@@ -38,6 +38,7 @@ export async function GET() {
     `- [Services](${SITE_URL}/services): all services in one place`,
     `- [Products](${SITE_URL}/products): products built by Asauvia; pricing is shared on a meeting`,
     `- [How we work](${SITE_URL}/how-we-work): process, engagement models, working across time zones`,
+    `- [Testimonials](${SITE_URL}/testimonials): verified client feedback and outcomes from founders and engineering leaders`,
     `- [Security](${SITE_URL}/security): confidentiality, access, IP and secure delivery practices`,
     `- [About](${SITE_URL}/about): who Asauvia is and how it operates`,
     `- [FAQ](${SITE_URL}/faq): answers on engagements, cost, time zones, IP, AI projects and services`,

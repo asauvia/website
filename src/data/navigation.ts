@@ -6,6 +6,7 @@ const primaryNav: NavItem[] = [
   { label: "Services", href: "/services" },
   { label: "Products", href: "/products" },
   { label: "How we work", href: "/how-we-work" },
+  { label: "Testimonials", href: "/testimonials" },
   { label: "Security", href: "/security" },
   { label: "About", href: "/about" },
   { label: "FAQ", href: "/faq" },
@@ -35,6 +36,7 @@ const footerGroups: { title: string; items: NavItem[]; wide?: boolean }[] = [
     items: [
       { label: "About", href: "/about" },
       { label: "How we work", href: "/how-we-work" },
+      { label: "Testimonials", href: "/testimonials" },
       { label: "Security", href: "/security" },
       { label: "Contact", href: "/contact" },
     ],

@@ -6,6 +6,7 @@ import faqGroups from "@/data/faq-page";
 import homeFaqs from "@/data/faqs";
 import type { Faq } from "@/lib/validators";
 import { getAllProducts } from "@/lib/products";
+import testimonials from "@/data/testimonials";
 import { SITE_URL, ALTERNATE_NAMES } from "@/lib/schema";
 
 export const dynamic = "force-static";
@@ -121,6 +122,17 @@ export async function GET() {
     "",
     ...principles.map((p) => `- ${p.title}: ${p.practice}`),
     "",
+    "## Client Testimonials & Reviews",
+    "",
+    `Source: ${SITE_URL}/testimonials`,
+    "",
+    ...testimonials.flatMap((t) => [
+      `### ${t.author} (${t.role}, ${t.industry} - ${t.location})`,
+      `Category: ${t.category}. Service: ${t.serviceName || "Engineering"}.`,
+      `Quote: "${t.quote}"`,
+      t.story,
+      "",
+    ]),
     "## Frequently asked questions",
     "",
     `Source: ${SITE_URL}/faq`,

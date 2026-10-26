@@ -75,3 +75,27 @@ export const processStepSchema = z.object({
   description: z.string(),
 });
 export type ProcessStep = z.infer<typeof processStepSchema>;
+
+export const testimonialSchema = z.object({
+  id: z.string(),
+  quote: z.string(),
+  story: z.string(),
+  author: z.string(),
+  role: z.string(),
+  industry: z.string(),
+  location: z.string(),
+  category: z.string(),
+  metrics: z.array(
+    z.object({
+      label: z.string(),
+      value: z.string(),
+    })
+  ).min(1).max(3),
+  serviceSlug: z.string().optional(),
+  serviceName: z.string().optional(),
+  rating: z.number().min(1).max(5).default(5),
+  date: z.string(),
+  featured: z.boolean().optional(),
+});
+export type Testimonial = z.infer<typeof testimonialSchema>;
+
