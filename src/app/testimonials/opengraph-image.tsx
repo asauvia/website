@@ -10,6 +10,6 @@ export default function OpengraphImage() {
   return renderOgImage({
     eyebrow: "Client Stories",
     title: "What our clients say.",
-    subtitle: `Verified reviews from ${testimonials.length} founders and engineering leaders across the US, UK, and worldwide.`,
+    subtitle: `Verified reviews from ${testimonials.length} founders and engineering leaders across India, the US, and worldwide.`,
   });
 }

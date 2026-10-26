@@ -12,7 +12,7 @@ import { getAllProducts } from "@/lib/products";
 
 const title = "Our Products";
 const description =
-  "Completed products built by Asauvia: SoftCloud Wash, Curato, and custom products built to order. Schedule a meeting with the sales team for pricing and details.";
+  "Completed products built by Asauvia: Washora, Curato, and custom products built to order. Schedule a meeting with the sales team for pricing and details.";
 
 export const metadata: Metadata = pageMetadata({ path: "/products", title, description });
 

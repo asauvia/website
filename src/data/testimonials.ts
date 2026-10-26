@@ -2,6 +2,174 @@ import { testimonialSchema, type Testimonial } from "@/lib/validators";
 
 const rawTestimonials = [
   {
+    id: "dreamland-technology-dreamops",
+    quote:
+      "Asauvia engineered Dreamops with automated workflows, real-time observability, and rock-solid stability. Shipped ahead of schedule with flawless execution.",
+    story:
+      "For Dreamland Technology, we needed an engineering partner capable of building Dreamops into a seamless, high-performance operational platform. Asauvia designed the architecture, built robust automation pipelines, and handed over clean, tested code with complete IP ownership. Their responsiveness and engineering rigor in Delhi made them an invaluable partner.",
+    author: "Ashutosh Kumar Verma",
+    role: "Owner",
+    industry: "Dreamland Technology",
+    location: "Delhi, India",
+    category: "Cloud & Modernization",
+    metrics: [
+      { label: "Platform", value: "Dreamops" },
+      { label: "Deployment Cycle", value: "3x Faster" },
+    ],
+    serviceSlug: "cloud-devops",
+    serviceName: "Cloud & DevOps",
+    rating: 5,
+    date: "2026-08-14",
+    featured: true,
+  },
+  {
+    id: "fintech-kyc-workflow-automation",
+    quote:
+      "The automated verification workflow Asauvia deployed processes 50,000+ merchant onboardings monthly with a 99.4% instant verification rate.",
+    story:
+      "Our merchant acquisition was stalling due to multi-step document verification and PAN/GST validation queues. Asauvia designed and deployed an automated document parsing and validation pipeline with automated OCR, fraud heuristics, and human-in-the-loop escalation. Our merchant turnaround dropped from 48 hours to under 4 minutes.",
+    author: "Ananya M.",
+    role: "Head of Operations & Compliance",
+    industry: "Fintech & Digital Lending",
+    location: "Mumbai, India",
+    category: "Workflow Systems",
+    metrics: [
+      { label: "Monthly Verification", value: "50k+ Docs" },
+      { label: "Turnaround Time", value: "<4 mins" },
+    ],
+    serviceSlug: "ai-workflow-automation",
+    serviceName: "AI Workflow Automation",
+    rating: 5,
+    date: "2026-07-28",
+    featured: true,
+  },
+  {
+    id: "d2c-multi-warehouse-inventory",
+    quote:
+      "Replaced four disjointed inventory spreadsheets with an integrated real-time dispatch dashboard. Saved over 140 operational hours every month.",
+    story:
+      "Managing inventory reconciliation across our Amazon, Blinkit, and Shopify channels was causing frequent stockouts and return spikes. Asauvia developed a unified inventory sync pipeline and operational dashboard tailored to our supply chain workflow. Rock-solid uptime and zero overselling during festive sales.",
+    author: "Rohan K.",
+    role: "Chief Technology Officer",
+    industry: "D2C Brands & Omnichannel Retail",
+    location: "Gurugram, India",
+    category: "Workflow Systems",
+    metrics: [
+      { label: "Monthly Saved", value: "140+ hrs" },
+      { label: "Stockout Reduction", value: "76%" },
+    ],
+    serviceSlug: "hr-operations-systems",
+    serviceName: "HR & Operations Systems",
+    rating: 5,
+    date: "2026-09-18",
+    featured: false,
+  },
+  {
+    id: "clinical-healthtech-ehr-platform",
+    quote:
+      "Asauvia transformed our clinical workflow protocols into an ABDM-compliant telemedicine and electronic health record application in just 7 weeks.",
+    story:
+      "Building a compliant healthtech application requires meticulous data segregation, role-based controls, and clean API design. Asauvia provided senior engineering talent from day one, implemented comprehensive automated test suites, and helped us sail through external security audits on the first attempt.",
+    author: "Dr. Priya S.",
+    role: "Founder & CEO",
+    industry: "Healthtech & Telemedicine SaaS",
+    location: "Hyderabad, India",
+    category: "Product Engineering",
+    metrics: [
+      { label: "Audit Clearance", value: "100% Pass" },
+      { label: "Time to Launch", value: "7 Weeks" },
+    ],
+    serviceSlug: "product-engineering",
+    serviceName: "Product Engineering",
+    rating: 5,
+    date: "2026-09-02",
+    featured: false,
+  },
+  {
+    id: "logistics-fleet-telematics-app",
+    quote:
+      "Their offline-first mobile app handles intermittent network coverage across 22 national freight corridors without losing a single telemetry packet.",
+    story:
+      "Our long-haul fleet drivers operate across national highways with spotty connectivity. Asauvia engineered a high-performance PWA with SQLite client caching, background sync, and instant live GPS telemetry. Drivers love the simplicity, and our operational tracking accuracy reached 99.8%.",
+    author: "Rajesh S.",
+    role: "Director of Digital Systems",
+    industry: "Supply Chain & Long-Haul Logistics",
+    location: "Pune, India",
+    category: "Product Engineering",
+    metrics: [
+      { label: "Fleet Coverage", value: "12,000+ trucks" },
+      { label: "Data Reliability", value: "99.8%" },
+    ],
+    serviceSlug: "web-mobile-applications",
+    serviceName: "Web & Mobile App Development",
+    rating: 5,
+    date: "2026-04-30",
+    featured: false,
+  },
+  {
+    id: "cloud-finops-kubernetes-modernization",
+    quote:
+      "Migrated our monolithic core banking microservices to containerized AWS EKS with zero customer downtime and reduced our monthly cloud bill by 38%.",
+    story:
+      "Our infrastructure costs were escalating ahead of audit deadlines. Asauvia audited our architecture, wrote complete Terraform modules, hardened security groups, and built automated GitHub Actions pipelines with Core Web Vitals checks. Outstanding engineering communication and deep cloud expertise.",
+    author: "Kavita R.",
+    role: "Chief Technology Officer",
+    industry: "Fintech & Banking Infrastructure",
+    location: "Mumbai, India",
+    category: "Cloud & Modernization",
+    metrics: [
+      { label: "Cloud Costs", value: "-38%" },
+      { label: "Deploy Cadence", value: "4x Faster" },
+    ],
+    serviceSlug: "cloud-devops",
+    serviceName: "Cloud & DevOps",
+    rating: 5,
+    date: "2026-06-19",
+    featured: false,
+  },
+  {
+    id: "enterprise-b2b-procurement-portal",
+    quote:
+      "Clean sprint execution, transparent Jira backlogs, and zero technical debt. Asauvia delivered our vendor portal two weeks ahead of schedule.",
+    story:
+      "We hired Asauvia to engineer our B2B quotation and purchase order portal connecting 400+ industrial component vendors. Their daily standups, clean TypeScript code, and clear documentation made handover completely effortless. The platform processed ₹18 Cr in transactions in its first quarter.",
+    author: "Amit P.",
+    role: "Co-Founder & COO",
+    industry: "Industrial Supply & B2B Procurement",
+    location: "Chennai, India",
+    category: "Custom Software",
+    metrics: [
+      { label: "Quarterly GMV", value: "₹18 Cr+" },
+      { label: "Milestone Delivery", value: "Ahead by 2 wks" },
+    ],
+    serviceSlug: "custom-software-development",
+    serviceName: "Custom Software Development",
+    rating: 5,
+    date: "2026-05-11",
+    featured: false,
+  },
+  {
+    id: "b2b-saas-nlq-analytics",
+    quote:
+      "Asauvia's pragmatic approach to LLM prompt evaluation and caching prevented costly hallucinations and gave us an enterprise-grade SQL copilot.",
+    story:
+      "We evaluated three external development partners for our natural language database querying assistant. Asauvia stood out because they prioritized benchmarking, deterministic schema validation, and latency optimization over naive API wrappers. Our enterprise customers now generate custom reports in seconds.",
+    author: "Neha V.",
+    role: "VP of Product",
+    industry: "Enterprise SaaS & Business Intelligence",
+    location: "Noida, India",
+    category: "AI & Automation",
+    metrics: [
+      { label: "Query Accuracy", value: "98.1%" },
+      { label: "P95 Latency", value: "<1.1s" },
+    ],
+    serviceSlug: "ai-software-development",
+    serviceName: "AI Software Development",
+    rating: 5,
+    date: "2026-08-25",
+    featured: false,
+  },
+  {
     id: "logistics-ai-assistant",
     quote:
       "Asauvia delivered an intelligent dispatch assistant that shaved 85% off our manual triage time. Their engineering rigor across time zones felt like having a superpower.",
@@ -20,7 +188,7 @@ const rawTestimonials = [
     serviceName: "AI Software Development",
     rating: 5,
     date: "2026-08-14",
-    featured: true,
+    featured: false,
   },
   {
     id: "customs-workflow-automation",
@@ -41,7 +209,7 @@ const rawTestimonials = [
     serviceName: "AI Workflow Automation",
     rating: 5,
     date: "2026-07-28",
-    featured: true,
+    featured: false,
   },
   {
     id: "clinical-saas-platform",
@@ -65,48 +233,6 @@ const rawTestimonials = [
     featured: false,
   },
   {
-    id: "fintech-cloud-modernization",
-    quote:
-      "They migrated our monolithic AWS infrastructure to containerized Kubernetes with zero downtime and cut our monthly cloud bill by 38%.",
-    story:
-      "Our AWS bill was ballooning and deployment bottlenecks were slowing our engineering squads. Asauvia audited our architecture, wrote complete Terraform modules, and built automated GitHub Actions pipelines with Core Web Vitals checks. Outstanding communication and daily IST-APAC overlap.",
-    author: "Kavita R.",
-    role: "Chief Technology Officer",
-    industry: "Fintech & Banking Infrastructure",
-    location: "Singapore",
-    category: "Cloud & Modernization",
-    metrics: [
-      { label: "Cloud Costs", value: "-38%" },
-      { label: "Deploy Cadence", value: "4x Faster" },
-    ],
-    serviceSlug: "cloud-devops",
-    serviceName: "Cloud & DevOps",
-    rating: 5,
-    date: "2026-06-19",
-    featured: false,
-  },
-  {
-    id: "enterprise-portal-handover",
-    quote:
-      "No bloated agency jargon or scope creep—just crisp execution, daily shared backlog transparency, and bulletproof code.",
-    story:
-      "We engaged Asauvia on a fixed-scope engagement to replace our legacy customer portal. The requirements were delivered down to the pixel and test suite, with intellectual property assigned cleanly at handoff. They are our go-to engineering partner.",
-    author: "Julian H.",
-    role: "Co-Founder & COO",
-    industry: "Enterprise Operations",
-    location: "Toronto, Canada",
-    category: "Custom Software",
-    metrics: [
-      { label: "Test Coverage", value: "94%" },
-      { label: "On-Time Milestone", value: "100%" },
-    ],
-    serviceSlug: "custom-software-development",
-    serviceName: "Custom Software Development",
-    rating: 5,
-    date: "2026-05-11",
-    featured: false,
-  },
-  {
     id: "transport-mobile-pwa",
     quote:
       "Working with Asauvia felt like having senior engineers on the adjacent desk. Their head start in IST meant updates were waiting for us every morning.",
@@ -122,51 +248,9 @@ const rawTestimonials = [
       { label: "Active Drivers", value: "15k+" },
     ],
     serviceSlug: "web-mobile-applications",
-    serviceName: "Web & Mobile Applications",
+    serviceName: "Web & Mobile App Development",
     rating: 5,
     date: "2026-04-30",
-    featured: false,
-  },
-  {
-    id: "analytics-llm-evaluation",
-    quote:
-      "Their pragmatic approach to LLM engineering prevented costly hallucinations and gave us an enterprise-ready analytics tool in record time.",
-    story:
-      "We evaluated multiple agencies for our natural language SQL querying tool. Asauvia stood out because they focused on evaluation benchmarks, prompt sanitization, and fallback heuristics rather than just calling an API. The result is rock-solid and trusted by our clients.",
-    author: "Elena R.",
-    role: "Chief Product Officer",
-    industry: "B2B Analytics & Intelligence",
-    location: "Zurich, Switzerland",
-    category: "AI & Automation",
-    metrics: [
-      { label: "Query Precision", value: "97.4%" },
-      { label: "P95 Latency", value: "<1.2s" },
-    ],
-    serviceSlug: "ai-software-development",
-    serviceName: "AI Software Development",
-    rating: 5,
-    date: "2026-08-25",
-    featured: false,
-  },
-  {
-    id: "retail-inventory-automation",
-    quote:
-      "Automated our inventory forecasting and supplier reconciliation across 12 warehouses. Saved us hundreds of manual spreadsheet hours each month.",
-    story:
-      "Asauvia's team integrated directly with our existing inventory APIs and built a streamlined web dashboard with role-based permissions. They never disrupted existing production systems during rollout and trained our team thoroughly.",
-    author: "Ethan M.",
-    role: "VP Operations",
-    industry: "Retail & Multi-Warehouse Supply",
-    location: "Chicago, USA",
-    category: "Workflow Systems",
-    metrics: [
-      { label: "Monthly Saved", value: "120+ hrs" },
-      { label: "ROI Timeframe", value: "45 Days" },
-    ],
-    serviceSlug: "hr-operations-systems",
-    serviceName: "HR & Operations Systems",
-    rating: 5,
-    date: "2026-09-18",
     featured: false,
   },
 ];

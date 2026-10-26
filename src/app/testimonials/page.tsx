@@ -42,6 +42,11 @@ const testimonialFaqs: Faq[] = [
       "Every engagement begins with a mutual non-disclosure agreement (NDA) before any proprietary code or business logic is shared. We work inside client-managed repositories and cloud environments wherever possible, and remove access immediately upon handover.",
   },
   {
+    question: "Do you partner with Indian startups and enterprises as well as global teams?",
+    answer:
+      "Yes. A core part of our client portfolio includes high-growth Indian startups, D2C brands, fintechs, and logistics enterprises based in Bengaluru, Mumbai, Delhi-NCR, Hyderabad, and Pune. Indian clients benefit from direct, same-timezone collaboration, real-time Slack/Teams communication, and rapid sprint turnarounds in IST.",
+  },
+  {
     question: "How does working with an IST engineering team work for Western clients?",
     answer:
       "Our team works India Standard Time (IST), which runs ahead of business hours in North America and Europe and overlaps directly with Asia-Pacific. We establish a daily overlap window for live standups and use visible, async backlog tracking so work started during our day is waiting for you when your day begins.",
