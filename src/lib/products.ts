@@ -5,7 +5,10 @@ import raw from "@/data/products.json";
 export const PRODUCT_STATUSES = ["Completed", "Live", "Beta", "In development", "Custom build"] as const;
 
 const productSchema = z.object({
-  slug: z.string().regex(/^[a-z0-9-]+$/, "slug must be lowercase letters, numbers and hyphens"),
+  slug: z
+    .string()
+    .transform((s) => s.toLowerCase().trim())
+    .refine((s) => /^[a-z0-9-]+$/.test(s), "slug must contain only letters, numbers and hyphens"),
   name: z.string().min(1).max(60),
   category: z.string().min(1).max(80),
   status: z.enum(PRODUCT_STATUSES),
