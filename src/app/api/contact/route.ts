@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { serviceCatalog } from "@/data/service-catalog";
-import { clientIp, rateLimited, verifyTurnstile } from "@/lib/request-guards";
 
 const COUNTRIES = [
   "United States",
@@ -42,6 +41,50 @@ const contactSchema = z.object({
 });
 
 type ContactPayload = z.infer<typeof contactSchema>;
+
+const RATE_LIMIT = 5;
+const RATE_WINDOW_MS = 10 * 60 * 1000;
+const hits = new Map<string, number[]>();
+
+function rateLimited(ip: string) {
+  const now = Date.now();
+  const recent = (hits.get(ip) ?? []).filter((time) => now - time < RATE_WINDOW_MS);
+  if (recent.length >= RATE_LIMIT) {
+    hits.set(ip, recent);
+    return true;
+  }
+  recent.push(now);
+  hits.set(ip, recent);
+  if (hits.size > 5000) {
+    for (const [key, times] of hits) {
+      if (times.every((time) => now - time >= RATE_WINDOW_MS)) hits.delete(key);
+    }
+  }
+  return false;
+}
+
+function clientIp(request: Request) {
+  const forwarded = request.headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return request.headers.get("x-real-ip") ?? "unknown";
+}
+
+async function verifyTurnstile(secret: string, token: string, ip: string) {
+  if (!token) return false;
+  const body = new URLSearchParams({ secret, response: token });
+  if (ip !== "unknown") body.set("remoteip", ip);
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      body,
+    });
+    if (!res.ok) return false;
+    const data = (await res.json()) as { success?: boolean };
+    return data.success === true;
+  } catch {
+    return false;
+  }
+}
 
 /** Every form email is marked so it can't be confused with someone emailing the inbox directly. */
 const SOURCE = "Website contact form (asauvia.com/contact)";

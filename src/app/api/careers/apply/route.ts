@@ -1,6 +1,8 @@
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { EXPERIENCE_LEVELS, openRoles } from "@/data/careers";
 import { clientIp, rateLimited, verifyTurnstile } from "@/lib/request-guards";
+import { careerSheetConfig, saveApplication } from "@/lib/career-sheet";
 
 const MAX_RESUME_BYTES = 5 * 1024 * 1024;
 const RESUME_TYPES: Record<string, string> = {
@@ -10,6 +12,25 @@ const RESUME_TYPES: Record<string, string> = {
 };
 const GENERAL = "general";
 const ROLE_SLUGS = [GENERAL, ...openRoles.map((role) => role.slug)] as [string, ...string[]];
+const SOURCE = "Website careers form (asauvia.com/careers)";
+
+/** Column order of the Google Sheet. Written as the header row only when the sheet is empty. */
+const HEADER = [
+  "Submission ID",
+  "Date (IST)",
+  "Time (IST)",
+  "Name",
+  "Email",
+  "Phone",
+  "Country or city",
+  "Role",
+  "Experience",
+  "Portfolio / LinkedIn",
+  "Cover note",
+  "CV file name",
+  "CV link",
+  "Source",
+];
 
 const optionalText = (max: number) => z.string().trim().max(max).optional().default("");
 
@@ -50,45 +71,41 @@ function safeFilename(name: string) {
   return base || "resume";
 }
 
-/** Returns the resume as a base64 attachment, or a field error message. */
-type ResumeResult = { error: string } | { attachment: { filename: string; content: string } };
+type ResumeFile = { name: string; mimeType: string; bytes: Buffer };
+type ResumeResult = { error: string } | { file: ResumeFile };
 
 async function readResume(value: FormDataEntryValue | null): Promise<ResumeResult> {
   if (!(value instanceof File) || value.size === 0) return { error: "Attach your CV or resume" };
   if (value.size > MAX_RESUME_BYTES) return { error: "Your CV must be 5 MB or smaller" };
   const extension = value.name.split(".").pop()?.toLowerCase() ?? "";
-  const expectedType = RESUME_TYPES[extension];
-  if (!expectedType) return { error: "Upload a PDF, DOC or DOCX file" };
+  const mimeType = RESUME_TYPES[extension];
+  if (!mimeType) return { error: "Upload a PDF, DOC or DOCX file" };
   const bytes = Buffer.from(await value.arrayBuffer());
   if (extension === "pdf" && !bytes.subarray(0, 5).toString("latin1").startsWith("%PDF")) {
     return { error: "This file does not look like a PDF" };
   }
-  return { attachment: { filename: safeFilename(value.name), content: bytes.toString("base64") } };
+  return { file: { name: safeFilename(value.name), mimeType, bytes } };
 }
 
-/** Every application email is marked so it can't be confused with a direct email to the inbox. */
-const SOURCE = "Website careers form (asauvia.com/careers)";
-
-function emailBody(data: ApplicationPayload, receivedAt: Date) {
-  const line = (label: string, value: string) => `${label}: ${value || "—"}`;
-  const ist = receivedAt.toLocaleString("en-GB", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short" });
+function sheetRow(id: string, data: ApplicationPayload, cvName: string, cvLink: string, receivedAt: Date) {
+  const date = receivedAt.toLocaleDateString("en-GB", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", year: "numeric" });
+  const time = receivedAt.toLocaleTimeString("en-GB", { timeZone: "Asia/Kolkata", hour12: false });
   return [
-    line("Source", SOURCE),
-    line("Received", `${ist} IST`),
-    "",
-    line("Name", data.name),
-    line("Email", data.email),
-    line("Phone", data.phone),
-    line("Location", data.location),
-    line("Role", roleTitle(data.role)),
-    line("Experience", data.experience),
-    line("Portfolio / LinkedIn", data.portfolio),
-    "",
-    "Cover note:",
-    data.message || "—",
-    "",
-    "The CV is attached to this email.",
-  ].join("\n");
+    id,
+    date,
+    time,
+    data.name,
+    data.email,
+    data.phone,
+    data.location,
+    roleTitle(data.role),
+    data.experience,
+    data.portfolio,
+    data.message,
+    cvName,
+    cvLink,
+    SOURCE,
+  ];
 }
 
 export async function POST(request: Request) {
@@ -134,36 +151,30 @@ export async function POST(request: Request) {
     if (!ok) return Response.json({ error: "verification_failed" }, { status: 400 });
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  // Applications go to the careers inbox when one is set, otherwise to the general contact inbox.
-  const to = process.env.CAREERS_TO_EMAIL || process.env.CONTACT_TO_EMAIL;
-  if (!apiKey || !to) {
+  const config = careerSheetConfig();
+  if (!config) {
+    console.error("[careers] CAREERS_SHEET_URL / CAREERS_SHEET_SECRET are not set");
     return Response.json({ error: "not_configured" }, { status: 503 });
   }
 
+  const receivedAt = new Date();
+  const submissionId = `APP-${receivedAt.toISOString().slice(0, 10).replace(/-/g, "")}-${randomUUID().slice(0, 8)}`;
+
   try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: process.env.CONTACT_FROM_EMAIL || "Asauvia Website <onboarding@resend.dev>",
-        to: [to],
-        reply_to: data.email,
-        subject: `[Career application] ${roleTitle(data.role)} — ${data.name}`.replace(/[\r\n]+/g, " "),
-        text: emailBody(data, new Date()),
-        attachments: [resume.attachment],
-        headers: { "X-Asauvia-Source": "website-careers-form" },
-        tags: [{ name: "source", value: "website_careers_form" }],
-      }),
+    // The script stores the CV in Drive and fills the "CV link" cell itself, so that cell is left empty here.
+    await saveApplication(config, {
+      header: HEADER,
+      row: sheetRow(submissionId, data, resume.file.name, "", receivedAt),
+      cv: {
+        name: `${submissionId}-${resume.file.name}`,
+        mimeType: resume.file.mimeType,
+        base64: resume.file.bytes.toString("base64"),
+      },
     });
-    if (!res.ok) {
-      console.error(`[careers] email provider responded ${res.status}`);
-      return Response.json({ error: "send_failed" }, { status: 502 });
-    }
-  } catch {
-    console.error("[careers] email provider request failed");
-    return Response.json({ error: "send_failed" }, { status: 502 });
+  } catch (error) {
+    console.error(`[careers] save failed for ${submissionId}: ${error instanceof Error ? error.message : error}`);
+    return Response.json({ error: "save_failed" }, { status: 502 });
   }
 
-  return Response.json({ ok: true });
+  return Response.json({ ok: true, id: submissionId });
 }

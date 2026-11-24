@@ -113,7 +113,7 @@ export function ApplicationForm({ defaultRole = GENERAL }: { defaultRole?: strin
   const [resume, setResume] = useState<File | null>(null);
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<Status>("idle");
-  const [submittedName, setSubmittedName] = useState("");
+  const [submitted, setSubmitted] = useState<{ firstName: string; id: string } | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const turnstileRef = useRef<HTMLDivElement>(null);
   const turnstileId = useRef<string | null>(null);
@@ -172,7 +172,8 @@ export function ApplicationForm({ defaultRole = GENERAL }: { defaultRole?: strin
     try {
       const res = await fetch("/api/careers/apply", { method: "POST", body: payload });
       if (res.ok) {
-        setSubmittedName(values.name.trim().split(/\s+/)[0]);
+        const saved = (await res.json().catch(() => ({}))) as { id?: string };
+        setSubmitted({ firstName: values.name.trim().split(/\s+/)[0], id: saved.id ?? "" });
         setStatus("success");
         return;
       }
@@ -208,10 +209,15 @@ export function ApplicationForm({ defaultRole = GENERAL }: { defaultRole?: strin
           <span aria-hidden="true" className="h-2 w-2 rounded-full bg-signal" />
           Application received
         </span>
-        <h2 className="font-display text-4xl tracking-tight lg:text-5xl">Thanks{submittedName ? `, ${submittedName}` : ""}.</h2>
+        <h2 className="font-display text-4xl tracking-tight lg:text-5xl">
+          Application received{submitted?.firstName ? `, ${submitted.firstName}` : ""}.
+        </h2>
         <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-          We have your application and CV. We review every application and reply to you by email.
+          Your application and CV have been saved to our recruitment records. We review every application.
         </p>
+        {submitted?.id ? (
+          <p className="mt-6 font-mono text-sm text-muted-foreground">Reference: {submitted.id}</p>
+        ) : null}
       </div>
     );
   }
@@ -399,7 +405,7 @@ export function ApplicationForm({ defaultRole = GENERAL }: { defaultRole?: strin
 
       {status === "not_configured" ? (
         <p role="alert" className="text-sm text-red-700">
-          Applications are not switched on yet. Please email your CV to the address above instead.
+          Online applications are not available right now. Please email your CV to career@asauvia.com instead.
         </p>
       ) : null}
       {status === "rate_limited" ? (
@@ -409,7 +415,7 @@ export function ApplicationForm({ defaultRole = GENERAL }: { defaultRole?: strin
       ) : null}
       {status === "error" ? (
         <p role="alert" className="text-sm text-red-700">
-          We could not send your application. Check the highlighted fields and try again.
+          We could not save your application. Check the highlighted fields and try again.
         </p>
       ) : null}
 

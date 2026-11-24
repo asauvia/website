@@ -11,7 +11,6 @@ import { CTASection } from "@/components/sections/CTASection";
 import { pageGraph, type Crumb } from "@/lib/schema";
 import { pageMetadata } from "@/lib/seo";
 import { openRoles } from "@/data/careers";
-import company from "@/data/company";
 
 const path = "/careers";
 const title = "Careers at Asauvia: Build AI and Software Products";
@@ -104,8 +103,8 @@ export default function CareersPage() {
               </p>
               <p className="leading-relaxed text-muted-foreground">
                 Prefer email? Send your CV to{" "}
-                <a href={`mailto:${company.email}`} className={linkClass}>
-                  {company.email}
+                <a href="mailto:career@asauvia.com" className={linkClass}>
+                  career@asauvia.com
                 </a>
                 .
               </p>
