@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/schema";
 import services from "@/data/services";
 import { getAllProducts } from "@/lib/products";
+import { openRoles } from "@/data/careers";
 
 // The blog is a separate app on its own host. Its pages are listed here from the blog's own sitemap.
 // Override BLOG_SITEMAP_URL to point at a different copy (for example a local preview).
@@ -25,6 +26,7 @@ const STATIC_ROUTES: {
   { path: "/testimonials", priority: 0.8, changeFrequency: "monthly" },
   { path: "/security", priority: 0.6, changeFrequency: "monthly" },
   { path: "/faq", priority: 0.6, changeFrequency: "monthly" },
+  { path: "/careers", priority: 0.6, changeFrequency: "weekly" },
   { path: "/contact", priority: 0.8, changeFrequency: "yearly" },
   { path: "/privacy", priority: 0.2, changeFrequency: "yearly", lastModified: "2026-10-19" },
   { path: "/terms", priority: 0.2, changeFrequency: "yearly" },
@@ -66,6 +68,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${SITE_URL}/services/${s.slug}`,
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+    ...openRoles.map((role) => ({
+      url: `${SITE_URL}/careers/${role.slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
     })),
     ...getAllProducts().map((product) => ({
       url: `${SITE_URL}/products/${product.slug}`,

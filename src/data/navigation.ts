@@ -38,6 +38,7 @@ const footerGroups: { title: string; items: NavItem[]; wide?: boolean }[] = [
       { label: "How we work", href: "/how-we-work" },
       { label: "Testimonials", href: "/testimonials" },
       { label: "Security", href: "/security" },
+      { label: "Careers", href: "/careers" },
       { label: "Contact", href: "/contact" },
     ],
   },
