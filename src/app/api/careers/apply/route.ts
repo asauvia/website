@@ -108,6 +108,33 @@ function sheetRow(id: string, data: ApplicationPayload, cvName: string, cvLink: 
   ];
 }
 
+/** Plain-text acknowledgement for the applicant. It states only what has happened: the application was received. */
+function acknowledgement(data: ApplicationPayload, id: string, from: string) {
+  const role = roleTitle(data.role);
+  const firstName = data.name.split(/\s+/)[0];
+  return {
+    to: data.email,
+    from,
+    name: "Asauvia Careers",
+    replyTo: from,
+    subject: `We received your application: ${role}`.replace(/[\r\n]+/g, " "),
+    body: [
+      `Hi ${firstName},`,
+      "",
+      `Thank you for applying for ${role} at Asauvia. This email confirms that we have received your application (reference ${id}).`,
+      "",
+      "Our team will review it, and we will contact you at this email address if we would like to take it forward.",
+      "",
+      "If you need to add or correct anything, reply to this email and quote your reference.",
+      "",
+      "Regards,",
+      "Asauvia Careers",
+      "",
+      "This is an automated confirmation.",
+    ].join("\n"),
+  };
+}
+
 export async function POST(request: Request) {
   let form: FormData;
   try {
@@ -160,9 +187,13 @@ export async function POST(request: Request) {
   const receivedAt = new Date();
   const submissionId = `APP-${receivedAt.toISOString().slice(0, 10).replace(/-/g, "")}-${randomUUID().slice(0, 8)}`;
 
+  // Acknowledgement goes to the applicant's address, from CAREERS_TO_EMAIL. Without that variable no email is attempted.
+  const sender = process.env.CAREERS_TO_EMAIL?.trim();
+  let emailSent = false;
+
   try {
     // The script stores the CV in Drive and fills the "CV link" cell itself, so that cell is left empty here.
-    await saveApplication(config, {
+    const saved = await saveApplication(config, {
       header: HEADER,
       row: sheetRow(submissionId, data, resume.file.name, "", receivedAt),
       cv: {
@@ -170,11 +201,21 @@ export async function POST(request: Request) {
         mimeType: resume.file.mimeType,
         base64: resume.file.bytes.toString("base64"),
       },
+      ...(sender && { ack: acknowledgement(data, submissionId, sender) }),
     });
+    emailSent = saved.emailSent;
+    if (sender && !saved.emailSent) {
+      const reason = saved.emailReported
+        ? saved.emailError || "the script reported a failure without an error message"
+        : "the deployed Apps Script returned no email result, so it is still the old version. In Apps Script use Deploy > Manage deployments > Edit > New version and approve the Gmail permission";
+      console.error(`[careers] ${submissionId} saved, but the acknowledgement email was not sent. Error: ${reason}`);
+    } else if (saved.emailSent && saved.emailFrom.toLowerCase() !== sender?.toLowerCase()) {
+      console.warn(`[careers] acknowledgement for ${submissionId} was sent from ${saved.emailFrom}, not ${sender}; add ${sender} as a Gmail "Send mail as" alias on that Google account`);
+    }
   } catch (error) {
     console.error(`[careers] save failed for ${submissionId}: ${error instanceof Error ? error.message : error}`);
     return Response.json({ error: "save_failed" }, { status: 502 });
   }
 
-  return Response.json({ ok: true, id: submissionId });
+  return Response.json({ ok: true, id: submissionId, emailSent });
 }

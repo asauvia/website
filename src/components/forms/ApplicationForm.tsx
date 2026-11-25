@@ -113,7 +113,7 @@ export function ApplicationForm({ defaultRole = GENERAL }: { defaultRole?: strin
   const [resume, setResume] = useState<File | null>(null);
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<Status>("idle");
-  const [submitted, setSubmitted] = useState<{ firstName: string; id: string } | null>(null);
+  const [submitted, setSubmitted] = useState<{ firstName: string; id: string; email: string; emailSent: boolean } | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const turnstileRef = useRef<HTMLDivElement>(null);
   const turnstileId = useRef<string | null>(null);
@@ -172,8 +172,13 @@ export function ApplicationForm({ defaultRole = GENERAL }: { defaultRole?: strin
     try {
       const res = await fetch("/api/careers/apply", { method: "POST", body: payload });
       if (res.ok) {
-        const saved = (await res.json().catch(() => ({}))) as { id?: string };
-        setSubmitted({ firstName: values.name.trim().split(/\s+/)[0], id: saved.id ?? "" });
+        const saved = (await res.json().catch(() => ({}))) as { id?: string; emailSent?: boolean };
+        setSubmitted({
+          firstName: values.name.trim().split(/\s+/)[0],
+          id: saved.id ?? "",
+          email: values.email.trim(),
+          emailSent: saved.emailSent === true,
+        });
         setStatus("success");
         return;
       }
@@ -214,6 +219,7 @@ export function ApplicationForm({ defaultRole = GENERAL }: { defaultRole?: strin
         </h2>
         <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
           Your application and CV have been saved to our recruitment records. We review every application.
+          {submitted?.emailSent ? ` A confirmation email has been sent to ${submitted.email}.` : ""}
         </p>
         {submitted?.id ? (
           <p className="mt-6 font-mono text-sm text-muted-foreground">Reference: {submitted.id}</p>

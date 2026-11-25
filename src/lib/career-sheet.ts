@@ -14,10 +14,23 @@ export function careerSheetConfig(): CareerSheetConfig | null {
   return { url, secret };
 }
 
+/** Acknowledgement email the script sends from the sheet owner's Gmail after the row is saved. */
+export type Acknowledgement = {
+  /** The applicant's own address, exactly as they entered it. The script checks it matches the row's Email column. */
+  to: string;
+  /** Wanted sender (CAREERS_TO_EMAIL). Used only if the Google account may send as it; otherwise the account's own address. */
+  from: string;
+  name: string;
+  replyTo: string;
+  subject: string;
+  body: string;
+};
+
 export type CareerSubmission = {
   header: string[];
   row: string[];
   cv: { name: string; mimeType: string; base64: string };
+  ack?: Acknowledgement;
 };
 
 /** Saves one application. Resolves only when the script confirms the row was written; throws otherwise. */
@@ -31,7 +44,15 @@ export async function saveApplication(config: CareerSheetConfig, submission: Car
     signal: AbortSignal.timeout(30_000),
   });
   if (!res.ok) throw new Error(`Sheet script responded ${res.status}`);
-  let data: { ok?: boolean; row?: number; cvLink?: string; error?: string };
+  let data: {
+    ok?: boolean;
+    row?: number;
+    cvLink?: string;
+    error?: string;
+    emailSent?: boolean;
+    emailFrom?: string;
+    emailError?: string;
+  };
   try {
     data = await res.json();
   } catch {
@@ -40,5 +61,13 @@ export async function saveApplication(config: CareerSheetConfig, submission: Car
   if (data.ok !== true || typeof data.row !== "number") {
     throw new Error(`Sheet script rejected the submission: ${data.error ?? "unknown error"}`);
   }
-  return { row: data.row, cvLink: data.cvLink ?? "" };
+  return {
+    row: data.row,
+    cvLink: data.cvLink ?? "",
+    emailSent: data.emailSent === true,
+    /** False when the script did not mention email at all, which means an old script version is deployed. */
+    emailReported: "emailSent" in data,
+    emailFrom: data.emailFrom ?? "",
+    emailError: data.emailError ?? "",
+  };
 }
