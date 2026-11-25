@@ -61,7 +61,10 @@ export default function CareersPage() {
                       className="group grid gap-4 py-8 transition-colors md:grid-cols-[1fr_auto] md:items-center md:gap-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
                     >
                       <div>
-                        <p className="mb-2 font-mono text-sm text-muted-foreground">{role.team}</p>
+                        <p className="mb-2 font-mono text-sm text-muted-foreground">
+                          {role.team}
+                          {role.openings && role.openings > 1 ? ` · ${role.openings} positions` : ""}
+                        </p>
                         <h3 className="font-display text-3xl tracking-tight group-hover:underline group-hover:underline-offset-4 lg:text-4xl">
                           {role.title}
                         </h3>

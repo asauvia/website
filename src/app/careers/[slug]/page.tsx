@@ -55,6 +55,10 @@ export default async function RolePage({ params }: PageProps<"/careers/[slug]">)
   if (!role) notFound();
 
   const path = `/careers/${role.slug}`;
+  const extraLists = [
+    ...(role.niceToHave?.length ? [{ heading: "Nice to have", items: role.niceToHave }] : []),
+    ...(role.sections ?? []),
+  ];
   const crumbs: Crumb[] = [
     { name: "Home", path: "/" },
     { name: "Careers", path: "/careers" },
@@ -73,7 +77,7 @@ export default async function RolePage({ params }: PageProps<"/careers/[slug]">)
       />
       <PageHero
         crumbs={crumbs}
-        label={`${role.team} · ${role.type}`}
+        label={`${role.team} · ${role.type}${role.openings && role.openings > 1 ? ` · ${role.openings} positions` : ""}`}
         title={role.title}
         description={role.summary}
       >
@@ -93,9 +97,11 @@ export default async function RolePage({ params }: PageProps<"/careers/[slug]">)
             <Checklist heading="What you will do" items={role.responsibilities} />
             <Checklist heading="What we are looking for" items={role.requirements} />
           </div>
-          {role.niceToHave?.length ? (
-            <div className="mt-16 lg:w-1/2 lg:pr-12">
-              <Checklist heading="Nice to have" items={role.niceToHave} />
+          {extraLists.length > 0 ? (
+            <div className="mt-16 grid gap-16 lg:grid-cols-2 lg:gap-24">
+              {extraLists.map((list) => (
+                <Checklist key={list.heading} heading={list.heading} items={list.items} />
+              ))}
             </div>
           ) : null}
           <p className="mt-16 max-w-2xl leading-relaxed text-muted-foreground">
